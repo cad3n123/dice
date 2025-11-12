@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import Dice from './Dice.vue';
 import { Status, type DiceItem, type FoundHand } from '@/types';
+import { moveElementToEnd } from '@/composables/helpers';
 
 const props = withDefaults(
   defineProps<{
@@ -17,14 +18,23 @@ const props = withDefaults(
     validSelectedHands: () => [],
   }
 );
-const emit = defineEmits(['update:dice', 'update:selectedDice']);
+const emit = defineEmits<{ (e: 'update:dice', dice: DiceItem[]): void }>();
+
+function moveDiceToEnd(dice: DiceItem) {
+  const index = props.dice.findIndex((d) => d.key === dice.key);
+  if (index != -1) {
+    emit('update:dice', moveElementToEnd(props.dice, index));
+  }
+}
 
 function moveToDice(item: DiceItem) {
   item.list = 'dice';
+  moveDiceToEnd(item);
 }
 
 function moveToSelectedDice(item: DiceItem) {
   item.list = 'selected';
+  moveDiceToEnd(item);
 }
 
 const internalDice = computed(() => {

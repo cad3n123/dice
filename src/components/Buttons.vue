@@ -80,6 +80,10 @@ function playSelected() {
       }
     });
   });
+
+  props.dice
+    .filter((dice) => dice.list === 'selected')
+    .forEach((dice) => (dice.list = 'dice'));
 }
 function pass() {
   playSelected();
