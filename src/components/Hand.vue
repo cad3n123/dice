@@ -13,13 +13,25 @@ const props = withDefaults(
     active: () => false,
   }
 );
-const status = ref(Status.FirstRoll);
-const dice: Ref<DiceItem[]> = ref([]);
-const bust = ref(false);
-
 const emit = defineEmits<{
   (e: 'update:active', active: boolean): void;
 }>();
+
+const status = ref(Status.FirstRoll);
+const bust = ref(false);
+
+let currentId = 0;
+const dice: Ref<DiceItem[]> = ref(
+  Array(6)
+    .fill(null)
+    .map((_, i) => {
+      return {
+        key: i + currentId++,
+        value: i + 1,
+        list: 'dice',
+      };
+    })
+);
 
 const active = computed({
   get() {
@@ -30,22 +42,9 @@ const active = computed({
   },
 });
 
-let currentId = 0;
-
-function refillDice() {
-  for (let i = 0; i < 6; i++) {
-    dice.value.push({
-      key: i + currentId++,
-      value: i + 1,
-      list: 'dice',
-    });
-  }
-}
 const scoring = inject('scoringRules');
 const { selectedHands: validSelectedHands, unplayedHands: validUnplayedHands } =
   farkleScoring(dice, scoring);
-
-refillDice();
 </script>
 
 <template>
